@@ -226,8 +226,9 @@ namespace UploadDownloadFileASPDotNetCore
             var totalAcresCellRange = ws.Range(totalAcresCell.Address, ws.LastColumnUsed().Cell(totalAcresCell.Address.RowNumber).Address);
             totalAcresCellRange.Merge();
 
-            var wsRange = ws.Range(ws.FirstCell().Address, ws.LastCell().Address);
-            wsRange.Style.Border.BottomBorder = XLBorderStyleValues.Hair;
+            var wsRange = ws.Range(ws.FirstCell().Address, ws.LastCellUsed().Address);
+            wsRange.Style.Border.InsideBorder = XLBorderStyleValues.Hair;
+            wsRange.Style.Border.OutsideBorder = XLBorderStyleValues.Hair;
 
             //var firstCell = ws.FirstCell().SetValue("This is Crop Plan from Decisive Farming Application");
             //firstCell.Style.Font.SetBold()
