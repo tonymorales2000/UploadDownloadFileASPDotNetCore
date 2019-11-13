@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -125,10 +126,11 @@ namespace UploadDownloadFileASPDotNetCore
             .CellBelow().SetValue("Canola")
             .CellBelow().SetValue("Wheat");
             ws.FirstCell().WorksheetColumn().AdjustToContents();
-            
+
             //af.AppendChild(firstCell.CellBelow().SetValue("Crop Type"));
             //var fcu = ws.FirstCell().WorksheetRow().FirstCellUsed();
             //var a6 = ws.Cell("A6").SetValue(fcu.CurrentRegion.ToString());
+
             
             ws.Range(titleCell, totalCell).SetAutoFilter().Sort();
             wb.SaveAs(memory);
@@ -171,6 +173,86 @@ namespace UploadDownloadFileASPDotNetCore
 
             return File(memory, MimeTypes.GetFileType()[".xlsx"], sFileName);
         }
+
+
+
+        [HttpGet, Route("CreateTable")]
+        public async Task<IActionResult> CreateTable(int id)
+        {
+            var memory = new MemoryStream();
+            string sWebRootFolder = _hostingEnvironment.WebRootPath;
+            string sFileName = @"table.xlsx";
+            //var wb = await BuildExcelFile(id);
+            var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("Sheet1");
+            ws.PageSetup.PageOrientation = XLPageOrientation.Landscape;
+            ws.PageSetup.AdjustTo(80);
+            var farmNameCell = ws.FirstCell().SetValue("This is Farm Name");
+            var totalAcresCell =  farmNameCell.CellBelow().SetValue("Total Acres");
+
+
+            DataTable table = new DataTable();
+            table.Columns.Add("Dosage", typeof(int));
+            table.Columns.Add("Drug", typeof(string));
+            table.Columns.Add("Patient", typeof(string));
+            table.Columns.Add("Date", typeof(DateTime));
+
+            table.Rows.Add(25, "Indocin", "David", new DateTime(2000, 1, 1));
+            table.Rows.Add(50, "Enebrel", "Sam", new DateTime(2000, 1, 2));
+            table.Rows.Add(10, "Hydralazine", "Christoff", new DateTime(2000, 1, 3));
+            table.Rows.Add(21, "Combivent", "Janet", new DateTime(2000, 1, 4));
+            table.Rows.Add(100, "Dilantin", "Melanie", new DateTime(2000, 1, 5));
+
+
+            var iXLCell = totalAcresCell.CellBelow();
+            var tableXl = iXLCell.InsertTable(table);
+            
+            var tableColumns = tableXl.Worksheet.Columns();
+            foreach(var col  in tableColumns)
+            {
+                col.AdjustToContents();
+            }
+
+            ws.FirstCell().WorksheetColumn().AdjustToContents();
+            ws.SheetView.FreezeRows(iXLCell.Address.RowNumber);
+
+            //farmNameCell.Address;
+            //ws.LastCellUsed().CellRight().Address;
+            var lastColumnAddress =   ws.LastColumnUsed().LastCellUsed().Address;
+            var farmNameRange = ws.Range(farmNameCell.Address , ws.LastColumnUsed().Cell(farmNameCell.Address.RowNumber).Address);
+            farmNameRange.Merge();
+
+
+            var totalAcresCellRange = ws.Range(totalAcresCell.Address, ws.LastColumnUsed().Cell(totalAcresCell.Address.RowNumber).Address);
+            totalAcresCellRange.Merge();
+
+            var wsRange = ws.Range(ws.FirstCell().Address, ws.LastCell().Address);
+            wsRange.Style.Border.BottomBorder = XLBorderStyleValues.Hair;
+
+            //var firstCell = ws.FirstCell().SetValue("This is Crop Plan from Decisive Farming Application");
+            //firstCell.Style.Font.SetBold()
+            //    .Fill.SetBackgroundColor(XLColor.CyanProcess);
+            //ws.SheetView.FreezeRows(2);
+            //var titleCell = firstCell.CellBelow().SetValue("Crop Type");
+            //var totalCell = titleCell.CellBelow().SetValue("Barley")
+            //.CellBelow().SetValue("Canola")
+            //.CellBelow().SetValue("Wheat");
+            //ws.FirstCell().WorksheetColumn().AdjustToContents();
+            //titleCell.Select();
+            //af.AppendChild(firstCell.CellBelow().SetValue("Crop Type"));
+            //var fcu = ws.FirstCell().WorksheetRow().FirstCellUsed();
+            //var a6 = ws.Cell("A6").SetValue(fcu.CurrentRegion.ToString());
+
+            //ws.Range(titleCell, totalCell).SetAutoFilter().Sort();
+            //ws.Range(titleCell, totalCell).SetAutoFilter();
+            wb.SaveAs(memory);
+
+
+            memory.Position = 0;
+
+            return File(memory, MimeTypes.GetFileType()[".xlsx"], sFileName);
+        }
+
 
 
 
