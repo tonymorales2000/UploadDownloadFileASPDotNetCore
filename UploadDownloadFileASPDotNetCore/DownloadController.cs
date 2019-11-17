@@ -188,47 +188,58 @@ namespace UploadDownloadFileASPDotNetCore
             ws.PageSetup.PageOrientation = XLPageOrientation.Landscape;
             ws.PageSetup.AdjustTo(80);
             var farmNameCell = ws.FirstCell().SetValue("This is Farm Name");
-            var totalAcresCell =  farmNameCell.CellBelow().SetValue("Total Acres");
-
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Dosage", typeof(int));
-            table.Columns.Add("Drug", typeof(string));
-            table.Columns.Add("Patient", typeof(string));
-            table.Columns.Add("Date", typeof(DateTime));
-
-            table.Rows.Add(25, "Indocin", "David", new DateTime(2000, 1, 1));
-            table.Rows.Add(50, "Enebrel", "Sam", new DateTime(2000, 1, 2));
-            table.Rows.Add(10, "Hydralazine", "Christoff", new DateTime(2000, 1, 3));
-            table.Rows.Add(21, "Combivent", "Janet", new DateTime(2000, 1, 4));
-            table.Rows.Add(100, "Dilantin", "Melanie", new DateTime(2000, 1, 5));
-
+            var totalAcresCell = farmNameCell.CellBelow().SetValue("Total Acres");
+            DataTable table = GetNewTable();
 
             var iXLCell = totalAcresCell.CellBelow();
             var tableXl = iXLCell.InsertTable(table);
-            
+            tableXl.Theme = XLTableTheme.None;
             var tableColumns = tableXl.Worksheet.Columns();
-            foreach(var col  in tableColumns)
+            //foreach (var col in tableColumns)
+            //{
+            //    col.AdjustToContents();
+            //}
+
+            //table = GetNewTable();
+
+            //iXLCell = totalAcresCell.CellBelow(10);
+            //tableXl = iXLCell.InsertTable(table);
+            //tableXl.Theme = XLTableTheme.TableStyleLight5;
+            var row = 20;
+             foreach (var theme in XLTableTheme.GetAllThemes())
             {
-                col.AdjustToContents();
+                table = GetNewTable();
+                
+                iXLCell = totalAcresCell.CellBelow(row);
+                tableXl = iXLCell.InsertTable(table);
+                tableXl.Theme = theme;
+                iXLCell.CellRight(5).SetValue(theme.ToString());
+                row += 10;
             }
 
+
+            //table = GetNewTable();
+
+            //iXLCell = totalAcresCell.CellBelow(20);
+            //tableXl = iXLCell.InsertTable(table);
+            //tableXl.Theme = XLTableTheme.TableStyleLight4;
+
             ws.FirstCell().WorksheetColumn().AdjustToContents();
-            ws.SheetView.FreezeRows(iXLCell.Address.RowNumber);
+            //ws.SheetView.FreezeRows(iXLCell.Address.RowNumber);
 
             //farmNameCell.Address;
             //ws.LastCellUsed().CellRight().Address;
-            var lastColumnAddress =   ws.LastColumnUsed().LastCellUsed().Address;
-            var farmNameRange = ws.Range(farmNameCell.Address , ws.LastColumnUsed().Cell(farmNameCell.Address.RowNumber).Address);
-            farmNameRange.Merge();
+            //var lastColumnAddress = ws.LastColumnUsed().LastCellUsed().Address;
+            //var farmNameRange = ws.Range(farmNameCell.Address, ws.LastColumnUsed().Cell(farmNameCell.Address.RowNumber).Address);
+            //farmNameRange.Merge();
 
 
-            var totalAcresCellRange = ws.Range(totalAcresCell.Address, ws.LastColumnUsed().Cell(totalAcresCell.Address.RowNumber).Address);
-            totalAcresCellRange.Merge();
+            //var totalAcresCellRange = ws.Range(totalAcresCell.Address, ws.LastColumnUsed().Cell(totalAcresCell.Address.RowNumber).Address);
+            //totalAcresCellRange.Merge();
 
-            var wsRange = ws.Range(ws.FirstCell().Address, ws.LastCellUsed().Address);
-            wsRange.Style.Border.InsideBorder = XLBorderStyleValues.Hair;
-            wsRange.Style.Border.OutsideBorder = XLBorderStyleValues.Hair;
+            //var wsRange = ws.Range(ws.FirstCell().Address, ws.LastCellUsed().Address);
+            //wsRange.Style.Border.InsideBorder = XLBorderStyleValues.Hair;
+            //wsRange.Style.Border.OutsideBorder = XLBorderStyleValues.Hair;
 
             //var firstCell = ws.FirstCell().SetValue("This is Crop Plan from Decisive Farming Application");
             //firstCell.Style.Font.SetBold()
@@ -254,8 +265,21 @@ namespace UploadDownloadFileASPDotNetCore
             return File(memory, MimeTypes.GetFileType()[".xlsx"], sFileName);
         }
 
+        private static DataTable GetNewTable()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Dosage", typeof(int));
+            table.Columns.Add("Drug", typeof(string));
+            table.Columns.Add("Patient", typeof(string));
+            table.Columns.Add("Date", typeof(DateTime));
 
-
+            table.Rows.Add(25, "Indocin", "David", new DateTime(2000, 1, 1));
+            table.Rows.Add(50, "Enebrel", "Sam", new DateTime(2000, 1, 2));
+            table.Rows.Add(10, "Hydralazine", "Christoff", new DateTime(2000, 1, 3));
+            table.Rows.Add(21, "Combivent", "Janet", new DateTime(2000, 1, 4));
+            table.Rows.Add(100, "Dilantin", "Melanie", new DateTime(2000, 1, 5));
+            return table;
+        }
 
         private async Task<XLWorkbook> BuildExcelFile(int id)
         {
