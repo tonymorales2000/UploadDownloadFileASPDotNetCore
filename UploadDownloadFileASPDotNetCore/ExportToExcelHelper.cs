@@ -137,5 +137,75 @@ namespace UploadDownloadFileASPDotNetCore
             }
 
         }
+
+        public void CropPlanWorksheetTableTest()
+        {
+            //var workbook = ExportToExcelHelper.CreateWorkbook();
+            //var sheetName = "Crop Plans";
+            //var worksheet = ExportToExcelHelper.AddWorksheet(workbook, sheetName);
+            //var columnList = ExportToExcelHelper.GetOrderedColumnNames(typeof(CropPlanGridDto));
+            //var tableGridStartCell = worksheet.FirstCell();
+
+            //var cropPlanGridDtos = new List<CropPlanGridDto>() {
+            //        new CropPlanGridDto() {
+            //            BudgetId = null,
+            //            CropPlanId = 86086,
+            //            CropTypeId = null,
+            //            CropTypeName = null,
+            //            CropVariety = null,
+            //            CropVarietyName = null,
+            //            CropYear = 2019,
+            //            FarmId = 2682,
+            //            FarmableAcres = (float)202.4,
+            //            FieldId = 12826,
+            //            FieldName = "Field 1",
+            //            GISDisplayValue = "W 6 28 25 W4",
+            //            IsGISBoundary = true,
+            //            MarketingPlan = null,
+            //            ToleranceTypeId = null,
+            //            ToleranceTypeName = null,
+            //            YieldGoal = 0,
+            //            YieldUnit = null
+            //        },
+            //        new CropPlanGridDto() {
+            //                BudgetId    =   null,
+            //                CropPlanId  =   86079,
+            //                CropTypeId  =   null,
+            //                CropTypeName    =   null,
+            //                CropVariety =   null,
+            //                CropVarietyName =   null,
+            //                CropYear    =   2019,
+            //                FarmId  =   2682,
+            //                FarmableAcres   =   (float)497.6,
+            //                FieldId =   12833,
+            //                FieldName   =   "Field 8/9",
+            //                GISDisplayValue =   "SC 32 27 25 W4",
+            //                IsGISBoundary   =   true,
+            //                MarketingPlan   =   null,
+            //                ToleranceTypeId =   null,
+            //                ToleranceTypeName   =   null,
+            //                YieldGoal   =   0,
+            //                YieldUnit   =   null,
+            //        }
+            //};
+            //var cropYear = 2019;
+            //var previousCropYear = cropYear - 1;
+            //var rotationColumnList = columnList.Where(a => a.ColumnName == "Rotation").OrderBy(c => c.ColumnOrder);
+            //foreach (var rotationCol in rotationColumnList)
+            //{
+            //    rotationCol.ColumnName = rotationCol.ColumnName + " " + previousCropYear;
+            //    previousCropYear--;
+            //}
+
+            //var cropPlanGridDtosList = cropPlanGridDtos.ToList<IExportToExcelDto>();
+
+            //ExportToExcelHelper.InsertTableGid(worksheet, cropPlanGridDtosList, tableGridStartCell, columnList);
+
+            //Assert.Equal(sheetName, worksheet.Name);
+            //Assert.Equal(3, worksheet.LastRowUsed().RowNumber());
+
+        }
+
+
     }
 }
