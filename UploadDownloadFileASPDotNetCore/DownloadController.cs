@@ -9,8 +9,8 @@ using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+//using NPOI.SS.UserModel;
+//using NPOI.XSSF.UserModel;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -41,51 +41,51 @@ namespace UploadDownloadFileASPDotNetCore
             return File(memory, MimeTypes.GetFileType()[ext], Path.GetFileName(path));
         }
 
-        // GET api/<controller>/5
-        [HttpGet("GetExcel") , Route("GetExcel")]
-        public async Task<IActionResult> GetExcelAsync(int id)
-        {
-            string sWebRootFolder = _hostingEnvironment.WebRootPath;
-            string sFileName = @"demo.xlsx";
-            string URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
-            FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
-            var memory = new MemoryStream();
-            using (var fs = new FileStream(Path.Combine(sWebRootFolder, sFileName), FileMode.Create, FileAccess.Write))
-            {
-                IWorkbook workbook;
-                workbook = new XSSFWorkbook();
-                ISheet excelSheet = workbook.CreateSheet("Demo");
-                IRow row = excelSheet.CreateRow(0);
+        //// GET api/<controller>/5
+        //[HttpGet("GetExcel") , Route("GetExcel")]
+        //public async Task<IActionResult> GetExcelAsync(int id)
+        //{
+        //    string sWebRootFolder = _hostingEnvironment.WebRootPath;
+        //    string sFileName = @"demo.xlsx";
+        //    string URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
+        //    FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+        //    var memory = new MemoryStream();
+        //    //using (var fs = new FileStream(Path.Combine(sWebRootFolder, sFileName), FileMode.Create, FileAccess.Write))
+        //    {
+        //        IWorkbook workbook;
+        //        workbook = new XSSFWorkbook();
+        //        ISheet excelSheet = workbook.CreateSheet("Demo");
+        //        IRow row = excelSheet.CreateRow(0);
 
-                row.CreateCell(0).SetCellValue("ID");
-                row.CreateCell(1).SetCellValue("Name");
-                row.CreateCell(2).SetCellValue("Age");
+        //        row.CreateCell(0).SetCellValue("ID");
+        //        row.CreateCell(1).SetCellValue("Name");
+        //        row.CreateCell(2).SetCellValue("Age");
 
-                row = excelSheet.CreateRow(1);
-                row.CreateCell(0).SetCellValue(1);
-                row.CreateCell(1).SetCellValue("Kane Williamson");
-                row.CreateCell(2).SetCellValue(29);
+        //        row = excelSheet.CreateRow(1);
+        //        row.CreateCell(0).SetCellValue(1);
+        //        row.CreateCell(1).SetCellValue("Kane Williamson");
+        //        row.CreateCell(2).SetCellValue(29);
 
-                row = excelSheet.CreateRow(2);
-                row.CreateCell(0).SetCellValue(2);
-                row.CreateCell(1).SetCellValue("Martin Guptil");
-                row.CreateCell(2).SetCellValue(33);
+        //        row = excelSheet.CreateRow(2);
+            //    row.CreateCell(0).SetCellValue(2);
+            //    row.CreateCell(1).SetCellValue("Martin Guptil");
+            //    row.CreateCell(2).SetCellValue(33);
 
-                row = excelSheet.CreateRow(3);
-                row.CreateCell(0).SetCellValue(3);
-                row.CreateCell(1).SetCellValue("Colin Munro");
-                row.CreateCell(2).SetCellValue(23);
+            //    row = excelSheet.CreateRow(3);
+            //    row.CreateCell(0).SetCellValue(3);
+            //    row.CreateCell(1).SetCellValue("Colin Munro");
+            //    row.CreateCell(2).SetCellValue(23);
 
-                workbook.Write(fs);
-            }
-            using (var stream = new FileStream(Path.Combine(sWebRootFolder, sFileName), FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
+            //    workbook.Write(fs);
+            //}
+        //    using (var stream = new FileStream(Path.Combine(sWebRootFolder, sFileName), FileMode.Open))
+        //    {
+        //        await stream.CopyToAsync(memory);
+        //    }
+        //    memory.Position = 0;
 
-            return File(memory, MimeTypes.GetFileType()[".xlsx"], "Report.xlsx");
-        }
+        //    return File(memory, MimeTypes.GetFileType()[".xlsx"], "Report.xlsx");
+        //}
 
         [HttpGet("GetExcel2"), Route("GetExcel2")]
         public async Task<IActionResult> DownloadFile(int id)
