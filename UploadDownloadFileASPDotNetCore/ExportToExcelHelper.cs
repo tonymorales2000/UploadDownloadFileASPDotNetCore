@@ -92,7 +92,6 @@ namespace UploadDownloadFileASPDotNetCore
                 
                 foreach (PropertyInfo prop in props)
                 {
-
                     var excelProp = GetExcelExportAttribute(prop);
                     if (excelProp != null)
                     {
@@ -111,10 +110,9 @@ namespace UploadDownloadFileASPDotNetCore
                             propValue = string.Empty;
                         }
 
-                        MapColumnWidthByValue(columnValueLengthMap, excelProp, propValue);
+                        MapColumnWidthByContent(columnValueLengthMap, excelProp, propValue);
 
                     }
-
                 }
                 var rowValues = values.OrderBy(a => a.Key).Select(c => c.Value).ToArray();
                 var row = table.Rows.Add(rowValues);
@@ -158,9 +156,9 @@ namespace UploadDownloadFileASPDotNetCore
             worksheet.SheetView.FreezeRows(tableGridStartCell.Address.RowNumber);
         }
 
-        private static void MapColumnWidthByValue(Dictionary<int, int> columnValueLengthMap, ExcelExportColumnAttribute excelProp, object propValue)
+        private static void MapColumnWidthByContent(Dictionary<int, int> columnValueLengthMap, ExcelExportColumnAttribute excelProp, object propValue)
         {
-            if (columnValueLengthMap.ContainsKey(excelProp.ColumnOrder))
+            if (columnValueLengthMap.ContainsKey(excelProp.ColumnOrder) && propValue != null)
             {
                 var propStrLength = propValue.ToString().Length;
                 var columnWidth = columnValueLengthMap[excelProp.ColumnOrder];
