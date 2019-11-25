@@ -18,11 +18,11 @@ namespace UploadDownloadFileASPDotNetCore
         public string CropTypeName { get; set; }
         [ExcelExportColumn("Variety", 5, typeof(string))]
         public string CropVarietyName { get; set; }
-        [ExcelExportColumn("Farmable\r\nAcres", 3, typeof(float))]
+        [ExcelExportColumn("Farmable\nAcres", 3, typeof(float))]
         public float? FarmableAcres { get; set; }
-        [ExcelExportColumn("Agronomic\r\nYield", 9, typeof(float))]
+        [ExcelExportColumn("Agronomic\nYield", 9, typeof(float))]
         public float? YieldGoal { get; set; }
-        [ExcelExportColumn("Yield\r\nUnit", 10, typeof(string))]
+        [ExcelExportColumn("Yield\nUnit", 10, typeof(string))]
         public string YieldUnit { get; set; }
         public int? ToleranceTypeId { get; set; }
         //[ExcelExportColumn("Budget", 7, typeof(int))]

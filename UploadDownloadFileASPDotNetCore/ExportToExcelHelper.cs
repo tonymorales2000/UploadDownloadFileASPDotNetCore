@@ -57,20 +57,39 @@ namespace UploadDownloadFileASPDotNetCore
             worksheet.Range(cell, cell.CellRight(cellNumber)).Merge();
         }
 
+        private static DataTable GetNewTable()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Dosage", typeof(int));
+            table.Columns.Add("Drug", typeof(string));
+            table.Columns.Add("Patient", typeof(string));
+            table.Columns.Add("Date", typeof(DateTime));
+
+            table.Rows.Add(25, "Indocin", "David", new DateTime(2000, 1, 1));
+            table.Rows.Add(50, "Enebrel", "Sam", new DateTime(2000, 1, 2));
+            table.Rows.Add(10, "Hydralazine", "Christoff", new DateTime(2000, 1, 3));
+            table.Rows.Add(21, "Combivent", "Janet", new DateTime(2000, 1, 4));
+            table.Rows.Add(100, "Dilantin", "Melanie", new DateTime(2000, 1, 5));
+            return table;
+        }
+
         public static void InsertTableGid(IXLWorksheet worksheet, List<IExportToExcelDto> gridDto, IXLCell tableGridStartCell, IList<ExcelExportColumnAttribute> columnAttibuteList, XLTableTheme xlTableTheme = null)
         {
             var table = new DataTable();
+            var columnWidthMap = new Dictionary<int, int>();
             //table header
             foreach (var attr in columnAttibuteList)
             {
                 table.Columns.Add(attr.ColumnName, attr.ColumnType);
             }
             //table rows
+            
             foreach (var dto in gridDto)
             {
                 var dtoType = dto.GetType();
                 var props = dtoType.GetProperties();
                 var values = new Dictionary<int, object>();
+                //var columnIndex = 1;
                 foreach (PropertyInfo prop in props)
                 {
 
@@ -79,14 +98,37 @@ namespace UploadDownloadFileASPDotNetCore
                     {
                         var propValue = prop.GetValue(dto, null);
                         if (propValue != null)
+                        {
                             values.Add(excelProp.ColumnOrder, propValue);
+                            
+                            
+                        }
                         else
                         {
                             if (excelProp.ColumnType == typeof(string))
+                            {
                                 values.Add(excelProp.ColumnOrder, "");
+                            }
                             else
+                            {
                                 values.Add(excelProp.ColumnOrder, 0);
+                            }
+                            propValue = string.Empty;
                         }
+
+                        if (columnWidthMap.ContainsKey(excelProp.ColumnOrder))
+                        {
+                            var propStrLength = propValue.ToString().Length;
+                            var strLength = columnWidthMap[excelProp.ColumnOrder];
+                            strLength = propStrLength > strLength ? propStrLength : strLength;
+                            columnWidthMap[excelProp.ColumnOrder] = strLength;
+                        }
+                        else
+                        {
+                            columnWidthMap.Add(excelProp.ColumnOrder, propValue.ToString().Length);
+                        }
+                        
+
 
                     }
 
@@ -94,7 +136,7 @@ namespace UploadDownloadFileASPDotNetCore
                 var rowValues = values.OrderBy(a => a.Key).Select(c => c.Value).ToArray();
                 var row = table.Rows.Add(rowValues);
             }
-
+            var widthMapArray = columnWidthMap.OrderBy(a => a.Key).ToArray();
             var gridTable = tableGridStartCell.InsertTable(table);
 
             //fomatting
@@ -104,11 +146,14 @@ namespace UploadDownloadFileASPDotNetCore
             else
                 gridTable.Theme = XLTableTheme.None;
 
-            var tableColumns = gridTable.Worksheet.Columns();
+            var tableColumns = gridTable.Worksheet.ColumnsUsed();
             foreach (var col in tableColumns)
             {
                 //col.AdjustToContents();
+                
                 var columnCell = col.Cell(tableGridStartCell.Address.RowNumber);
+                var columnWidth = widthMapArray[columnCell.Address.ColumnNumber - 1].Value;
+                col.Width = columnWidth < 15 ? 15 : columnWidth;
                 var columnName = columnCell.Value;
                 var dataType = columnAttibuteList.FirstOrDefault(a => a.ColumnName.Equals(columnName));
                 if (dataType != null)
