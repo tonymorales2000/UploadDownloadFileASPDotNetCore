@@ -61,8 +61,10 @@ namespace UploadDownloadFileASPDotNetCore
             var workbook = ExportToExcelHelper.CreateWorkbook();
             var sheetName = "Crop Plans";
             var worksheet = ExportToExcelHelper.AddWorksheet(workbook, sheetName);
+            
+
             var columnList = ExportToExcelHelper.GetOrderedColumnNames(typeof(CropPlanGridDto));
-            var tableGridStartCell = worksheet.FirstCell();
+            //var tableGridStartCell = worksheet.FirstCell();
 
             var cropPlanGridDtos = new List<CropPlanGridDto>() {
                     new CropPlanGridDto() {
@@ -71,7 +73,7 @@ namespace UploadDownloadFileASPDotNetCore
                         CropTypeId = null,
                         CropTypeName = "Alfa Alfa",
                         //CropVariety = null,
-                        CropVarietyName = null,
+                        CropVarietyName = "Corn",
                         CropYear = 2019,
                         FarmId = 2682,
                         FarmableAcres = (float)202.4,
@@ -104,6 +106,26 @@ namespace UploadDownloadFileASPDotNetCore
                             ToleranceTypeName   =   null,
                             YieldGoal   =   0,
                             YieldUnit   =   null,
+                    },
+                    new CropPlanGridDto() {
+                            BudgetId    =   null,
+                            CropPlanId  =   88099,
+                            CropTypeId  =   null,
+                            CropTypeName    =   null,
+                            //CropVariety =   null,
+                            CropVarietyName =   null,
+                            CropYear    =   2019,
+                            FarmId  =   2682,
+                            FarmableAcres   =   (float)497.6,
+                            FieldId =   12833,
+                            FieldName   =   "Field 87/990",
+                            GISDisplayValue =   "SC 32 27 25 W4",
+                            IsGISBoundary   =   true,
+                            MarketingPlan   =   null,
+                            ToleranceTypeId =   null,
+                            ToleranceTypeName   =   null,
+                            YieldGoal   =   0,
+                            YieldUnit   =   null,
                     }
             };
             var cropYear = 2019;
@@ -117,12 +139,36 @@ namespace UploadDownloadFileASPDotNetCore
 
             var cropPlanGridDtosList = cropPlanGridDtos.ToList<IExportToExcelDto>();
 
+            var totalAcres = cropPlanGridDtos.Where(a => a.FarmableAcres != null).Sum(a => a.FarmableAcres);
+            var totalAcresStr = totalAcres.HasValue ? totalAcres.Value.ToString("#,##0.00") : "";
+            var totalAcresDescription = string.Format($"Crop Plans {cropYear} (Total Acres: {totalAcresStr})");
+            var firstCell = worksheet.FirstCell();
+            ExportToExcelHelper.MergeRows(worksheet, firstCell, 3);
+
+            //header values
+            var farmNameCell = firstCell.SetValue("Tony Test Farm");
+            farmNameCell.Style.Font.SetBold(true);
+            farmNameCell.Style.Font.SetFontSize(12);
+
+
+            var totalAcreRow = farmNameCell.CellBelow();
+            ExportToExcelHelper.MergeRows(worksheet, totalAcreRow, 3);
+            var totalAcresCell = totalAcreRow.SetValue(totalAcresDescription);
+            totalAcresCell.Style.Font.SetFontSize(11);
+            var tableGridStartCell = totalAcresCell.CellBelow();
+
             ExportToExcelHelper.InsertTableGid(worksheet, cropPlanGridDtosList, tableGridStartCell, columnList);
+
+            var tableCellCount = columnList.Count - 1;
+
+            ExportToExcelHelper.MergeRows(worksheet, farmNameCell, tableCellCount);
+            ExportToExcelHelper.MergeRows(worksheet, totalAcresCell, tableCellCount);
+
 
             var fileInByteArray = ExportToExcelHelper.GetByteArray(workbook);
 
-            return File(fileInByteArray, MimeTypes.GetFileType()[".xlsx"], "Crop Plans 2019.xlsx");
-             
+            //return File(fileInByteArray, MimeTypes.GetFileType()[".xlsx"], "Crop Plans 2019.xlsx");
+            return File(fileInByteArray, MimeKit.MimeTypes.GetMimeType("Crop Plans 2019.xlsx"), "Crop Plans 2019.xlsx");
         }
 
 

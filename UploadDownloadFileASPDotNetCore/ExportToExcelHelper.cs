@@ -5,7 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+
 
 namespace UploadDownloadFileASPDotNetCore
 {
@@ -76,20 +76,20 @@ namespace UploadDownloadFileASPDotNetCore
         public static void InsertTableGid(IXLWorksheet worksheet, List<IExportToExcelDto> gridDto, IXLCell tableGridStartCell, IList<ExcelExportColumnAttribute> columnAttibuteList, XLTableTheme xlTableTheme = null)
         {
             var table = new DataTable();
-            var columnWidthMap = new Dictionary<int, int>();
+            var columnValueLengthMap = new Dictionary<int, int>();
             //table header
             foreach (var attr in columnAttibuteList)
             {
                 table.Columns.Add(attr.ColumnName, attr.ColumnType);
             }
-            //table rows
-            
+
+            //table rows           
             foreach (var dto in gridDto)
             {
                 var dtoType = dto.GetType();
                 var props = dtoType.GetProperties();
                 var values = new Dictionary<int, object>();
-                //var columnIndex = 1;
+                
                 foreach (PropertyInfo prop in props)
                 {
 
@@ -100,35 +100,18 @@ namespace UploadDownloadFileASPDotNetCore
                         if (propValue != null)
                         {
                             values.Add(excelProp.ColumnOrder, propValue);
-                            
-                            
                         }
                         else
                         {
                             if (excelProp.ColumnType == typeof(string))
-                            {
                                 values.Add(excelProp.ColumnOrder, "");
-                            }
                             else
-                            {
                                 values.Add(excelProp.ColumnOrder, 0);
-                            }
+
                             propValue = string.Empty;
                         }
 
-                        if (columnWidthMap.ContainsKey(excelProp.ColumnOrder))
-                        {
-                            var propStrLength = propValue.ToString().Length;
-                            var strLength = columnWidthMap[excelProp.ColumnOrder];
-                            strLength = propStrLength > strLength ? propStrLength : strLength;
-                            columnWidthMap[excelProp.ColumnOrder] = strLength;
-                        }
-                        else
-                        {
-                            columnWidthMap.Add(excelProp.ColumnOrder, propValue.ToString().Length);
-                        }
-                        
-
+                        MapColumnWidthByValue(columnValueLengthMap, excelProp, propValue);
 
                     }
 
@@ -136,7 +119,7 @@ namespace UploadDownloadFileASPDotNetCore
                 var rowValues = values.OrderBy(a => a.Key).Select(c => c.Value).ToArray();
                 var row = table.Rows.Add(rowValues);
             }
-            var widthMapArray = columnWidthMap.OrderBy(a => a.Key).ToArray();
+            var columnValueLengthArray = columnValueLengthMap.OrderBy(a => a.Key).ToArray();
             var gridTable = tableGridStartCell.InsertTable(table);
 
             //fomatting
@@ -149,11 +132,9 @@ namespace UploadDownloadFileASPDotNetCore
             var tableColumns = gridTable.Worksheet.ColumnsUsed();
             foreach (var col in tableColumns)
             {
-                //col.AdjustToContents();
-                
                 var columnCell = col.Cell(tableGridStartCell.Address.RowNumber);
-                var columnWidth = widthMapArray[columnCell.Address.ColumnNumber - 1].Value;
-                col.Width = columnWidth < 15 ? 15 : columnWidth;
+                var columnValueLength = columnValueLengthArray[columnCell.Address.ColumnNumber - 1].Value;
+                
                 var columnName = columnCell.Value;
                 var dataType = columnAttibuteList.FirstOrDefault(a => a.ColumnName.Equals(columnName));
                 if (dataType != null)
@@ -163,13 +144,34 @@ namespace UploadDownloadFileASPDotNetCore
                     else if (dataType.ColumnType == typeof(decimal))
                         col.Style.NumberFormat.Format = "$ ###,###,##0.00";
 
-                }
+                    //adjust column width
+                    var defaultColumnWidth = dataType.ColumnWidth;
+                    if (columnValueLength > defaultColumnWidth)
+                        defaultColumnWidth = columnValueLength;
+                    col.Width = defaultColumnWidth;
+                } 
 
                 var tableHeaderRowStyle = columnCell.Style;
                 if (xlTableTheme == null)
                     tableHeaderRowStyle.Fill.SetBackgroundColor(XLColor.LightGray);
             }
             worksheet.SheetView.FreezeRows(tableGridStartCell.Address.RowNumber);
+        }
+
+        private static void MapColumnWidthByValue(Dictionary<int, int> columnValueLengthMap, ExcelExportColumnAttribute excelProp, object propValue)
+        {
+            if (columnValueLengthMap.ContainsKey(excelProp.ColumnOrder))
+            {
+                var propStrLength = propValue.ToString().Length;
+                var columnWidth = columnValueLengthMap[excelProp.ColumnOrder];
+                if(propStrLength > columnWidth)
+                    columnWidth = propStrLength;
+                columnValueLengthMap[excelProp.ColumnOrder] = columnWidth;
+            }
+            else
+            {
+                columnValueLengthMap.Add(excelProp.ColumnOrder, propValue.ToString().Length);
+            }
         }
 
         public static byte[] GetByteArray(XLWorkbook workbook)

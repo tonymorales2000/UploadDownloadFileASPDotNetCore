@@ -10,19 +10,19 @@ namespace UploadDownloadFileASPDotNetCore
         public int CropPlanId { get; set; }
         [ExcelExportColumn("Field Id", 0, typeof(int))]
         public int FieldId { get; set; }
-        [ExcelExportColumn("Field Name", 1, typeof(string))]
+        [ExcelExportColumn("Field Name", 1, typeof(string), 12)]
         public string FieldName { get; set; }
         public int CropYear { get; set; }
         public int? CropTypeId { get; set; }
-        [ExcelExportColumn("Crop Type", 4, typeof(string))]
+        [ExcelExportColumn("Crop Type", 4, typeof(string), 12)]
         public string CropTypeName { get; set; }
-        [ExcelExportColumn("Variety", 5, typeof(string))]
+        [ExcelExportColumn("Variety", 5, typeof(string), 12)]
         public string CropVarietyName { get; set; }
         [ExcelExportColumn("Farmable\nAcres", 3, typeof(float))]
         public float? FarmableAcres { get; set; }
         [ExcelExportColumn("Agronomic\nYield", 9, typeof(float))]
         public float? YieldGoal { get; set; }
-        [ExcelExportColumn("Yield\nUnit", 10, typeof(string))]
+        [ExcelExportColumn("Yield\nUnit", 10, typeof(string), 8)]
         public string YieldUnit { get; set; }
         public int? ToleranceTypeId { get; set; }
         //[ExcelExportColumn("Budget", 7, typeof(int))]
@@ -33,12 +33,12 @@ namespace UploadDownloadFileASPDotNetCore
         public string ToleranceTypeName { get; set; }
         public IList<CropPlanGridRotationDto> Rotations { get; set; }
         public bool IsGISBoundary { get; set; }
-        [ExcelExportColumn("Legal Description", 2, typeof(string))]
+        [ExcelExportColumn("Legal Description", 2, typeof(string), 18)]
         public IEnumerable<char> GISDisplayValue { get; set; }
         public int FarmId { get; set; }
         //public CropVarieties CropVariety { get; set; }
 
-        [ExcelExportColumn("Rotation", 11, typeof(string))]
+        [ExcelExportColumn("Rotation", 11, typeof(string), 14)]
         public virtual string CropRotationPreviousYear
         {
             get
@@ -48,7 +48,7 @@ namespace UploadDownloadFileASPDotNetCore
             }
         }
 
-        [ExcelExportColumn("Rotation", 12, typeof(string))]
+        [ExcelExportColumn("Rotation", 12, typeof(string), 14)]
         public virtual string CropRotationPreviousYearSecond
         {
             get
